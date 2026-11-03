@@ -17,7 +17,8 @@ function [a, e, i, OM, om, th] = car2kep(rr, vv, mu)
 % th    [1x1]   true anomaly            [rad]
 % -------------------------------------------------------------------------
 
-    kk = [0; 0; 1];
+    kk  = [0; 0; 1];
+    tol = 1e-6;        % tolerance used for circular orbit check
     
     r  = norm(rr);
     v  = norm(vv);
@@ -32,7 +33,7 @@ function [a, e, i, OM, om, th] = car2kep(rr, vv, mu)
     
     i  = acos(hh(3) / h);
     
-    if (i == 0)         
+    if (sin(i) < tol)   % sin(i) deals both i=0 & i=pi cases
         OM = 0;
         NN = [1; 0; 0];
     else
@@ -44,26 +45,31 @@ function [a, e, i, OM, om, th] = car2kep(rr, vv, mu)
         end
     end
     
-    v_r = dot(vv, rr) / r;      % relative velocity
-    
-    if (e == 0)     % circular orbit
+    if (e < tol)     % circular orbit
         om = 0;
-        if v_r >= 0
-            th = acos(dot(rr, NN) / r);
+    
+        % for a circular orbit NN = ee and so NN x rr > 0 for theta = 0-pi
+        % we avoid using v_r because it is identically zero for e = 0
+        if dot(cross(NN, rr), hh) >= 0
+            th = real(acos(dot(rr, NN) / r));
         else
-            th = 2*pi - acos(dot(rr, NN) / r);
+            th = 2*pi - real(acos(dot(rr, NN)) / r);
         end
     else            % elliptical orbit
-        if ee(3) >= 0
+        if dot(cross(NN, ee), hh) >= 0
             om = acos(dot(NN, ee) / e);
         else
             om = 2*pi - acos(dot(NN, ee) / e);
         end
-    
+        v_r = dot(vv, rr) / r;      % relative velocity
         if v_r >= 0
-            th = acos(dot(rr, ee)/(r*e));
+            th = real(acos(dot(rr, ee)/(r*e)));
         else
-            th = 2*pi - acos(dot(rr, ee)/(r*e));
+            th = 2*pi - real(acos(dot(rr, ee)/(r*e)));
         end
     end
+    
+    OM = mod(OM, 2*pi);
+    om = mod(om, 2*pi);
+    th = mod(th, 2*pi);
 end

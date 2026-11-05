@@ -1,0 +1,5 @@
+Pointing error : +- 5°
+Rate error:      +- 1.5-2°/s
+ecc error:       +- 0.02°
+inc error:       +- 0.04°
+SMA error:       +- 2km

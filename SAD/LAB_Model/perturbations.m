@@ -1,34 +1,44 @@
-clear; clc;
+clc
+clear
+close all
 
 %% Task 1 Orbit parameters and environment
-r_sun = 1.496 * 10^8;
-mu_E = 398600e9;
-theta0 = deg2rad(30);
-i = deg2rad(10); %inclination
-a = 6700e3;
-e = 0;
-n = sqrt(mu_E/a^3);
-Tf = 2*pi*sqrt(a^3/mu_E);
-T = 365.25 * 24 * 3600; % [s] Sun year
-n_s = 2*pi/T; % for sun
-epsilon = deg2rad(23.45); % [rad]
-Mt = 5.97 * 10^24;
-G = 6.67 * 10^-11;
-RE = 6371e3;
+% Orbital Parameters: 
+h = 2000E3;                % 1) Altitude [m]
+e = 0.02;                  % 2) Eccentricity []
+i = deg2rad(45);           % 3) Inclination [rad]
+RAAN = deg2rad(0);         % 4) Right ascension of ascending node [rad]
+AOP = deg2rad(0);          % 5) Argument of periapsis [rad]
+theta0 = deg2rad(0);       % 6) True Anomaly at t=0 [rad]
+
+% Constants
+G = 6.6743E-11;            %[m^3/(s^2*kg)] Universal Gravity Constant
+r_sun = 1.496E8;           %[m] astronomic unit = distance SUN-EARTH
+Mt = 5.97E24;              %[kg] Earth's mass
+mu_E = 398600E9;           %[m^3/s^2] G*ME 
+r_earth = 6371E3;          %[m] Earth's radius
+epsilon = deg2rad(23.45);  %[rad] earth axis inclination
+c = 3E8;                   %[m/s] Light Speed in vacuum
+Fe = 1358;                 %[W/m^2] Jsun = avg power at 1AU
+
+% Calculations
+a = r_earth + h;           %[semi major axis of the orbit]
+
+T = 365.25 * 24 * 3600;    %[s] Sun year period
+Tf = 2*pi*sqrt(a^3/mu_E);  %[s]  Orbit's period
+
+n = sqrt(mu_E/a^3);        %[rad/s] mean motion of the earth
+n_s = 2*pi/T;              %[rad/s] mean motion of the sun
 
 %% Task 2 and 3 Gravity gradient and SRP
-
-J_depl = diag([100.9 , 25.1, 91.6] * 10^-2); % [Kg*m^2]
-J_inv = inv(J_depl);
-Jx = 100.9 * 10^-2;
-Jy = 25.1 * 10^-2;
-Jz = 91.6 * 10^-2;
-A0 = eye(3);
-omega = [0.02, 0.05, 0.08];
-
-c = 3 * 10^8; % [m/s]
-Fe = 1358; % [W/m^2]
-P = Fe/c;
+Jx = 100.9 * 10^-2;                          % XX Component inertia matrix                   
+Jy = 25.1 * 10^-2;                           % YY component inertia matrix
+Jz = 91.6 * 10^-2;                           % ZZ component inertia matrix
+J_depl = diag([100.9 , 25.1, 91.6] * 10^-2); % Diagonal Inertia Matrix with solar arrays deployed [Kg*m^2]
+J_inv = inv(J_depl);                         % Inverse of the Inertia Matrix 
+A0 = eye(3);                                 % Initial DCM A0 = I
+omega = [0.02, 0.05, 0.08];                  % Initial angular velocity [rad/s]
+P = Fe/c;                                    % Solar radiation pressure norm [Pa]
 NB1  = [+1; 0; 0];
 NB2  = [0; +1; 0];
 NB3  = [-1; 0; 0];
@@ -58,17 +68,16 @@ A_panel = 12*10^-2;
 r_CM = [0.02; -0.01; 0.015];
 
 %% Task 4: Earth Magnetic field
-g10 = -29404.8 * 1e-9; % [T]
-g11 = -1450.9 * 1e-9;  
-h11 = 4652.5 * 1e-9;   
+g10 = -29404.8E-9; % [T]
+g11 = -1450.9E-9;  
+h11 = 4652.5E-9;   
 H0 = sqrt(g10^2 + g11^2 + h11^2); 
-R_E = 6371e3; %Earth radius [m]
 omega_E = 2 * pi / 86400; 
-tilt_mag = deg2rad(11.5);
-j_B = [0.01; 0.05; 0.01]; %Rezidual satellite dipole
+tilt_mag = deg2rad(11.5);          % Magnetic axis of the earth tilt wrt rotation axis [rad]
+j_B = [0.01; 0.05; 0.01];          % Residual satellite dipole [Am^2]
 
 %% Task 5: Run simulation and plots
-out = sim('Perturbations', 'Solver', 'ode4', 'FixedStep', '1e-2', 'StopTime', 'Tf');
+out = sim('Pert', 'Solver', 'ode4', 'FixedStep', '1e-2', 'StopTime', 'Tf');
 
 %Data extraction
 t = out.t;

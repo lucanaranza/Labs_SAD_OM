@@ -10,11 +10,17 @@ lp    = 0.32;                            % chosen panel length (along y)
 
 %% Max panel length that keeps Iz > Iy > Ix and 1+3Kr+KyKr > 4*sqrt(KyKr)
 ok = @(l) stable(l, Lx, Ly, Lz, mBus, wp, sigma, nP);
-lo = 1e-3; hi = 2;
+
+lo = 1e-3; hi = 2; %(Initial conditions)
 assert(ok(lo), 'Bus alone is not stable');
-for k = 1:60                             % bisection
+for k = 1:60       % bisection  method iterated 60 times -> better than newton rhapson because it always converges
     mid = (lo+hi)/2;
-    if ok(mid), lo = mid; else, hi = mid; end
+
+    if ok(mid)
+        lo = mid;
+    else
+        hi = mid; 
+    end
 end
 lpMax = lo;
 
@@ -22,7 +28,7 @@ lpMax = lo;
 [s, I, g] = stable(lp, Lx, Ly, Lz, mBus, wp, sigma, nP);
 Ix = I(1,1); Iy = I(2,2); Iz = I(3,3);
 mp = sigma*wp*lp;
-A  = max([Ly*Lz, Lx*Lz, Lx*Ly + nP*wp*lp]);   % worst-case projected area
+A  = max([Ly*Lz, Lx*Lz, Lx*Ly + nP*wp*lp]);   % worst-case projected area -> for SRP and DRAG frontal full panel exposed
 
 fprintf('Total mass: %.2f kg\n', mBus + nP*mp);
 fprintf('Ix = %.4f  Iy = %.4f  Iz = %.4f kg*m^2\n', Ix, Iy, Iz);

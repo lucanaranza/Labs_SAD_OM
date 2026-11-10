@@ -14,11 +14,12 @@ a = 8000e3; % [m]
 n = sqrt(mu_E/a^3);
 Tf = 2*pi*sqrt(a^3/mu_E); %orbit period [s]
 
-%% Task 2 and 3 Gravity gradient and SRP
-I_depl = diag([22.53, 26.71, 33.03] * 10^-2); % [Kg*m^2]
+%% Task 2 and 3 Gravity gradient and SRP 
 Ix = 22.53 * 10^-2;
 Iy = 26.71 * 10^-2;
 Iz = 33.03 * 10^-2;
+I_depl = diag([  Ix,   Iy,   Iz]); % [Kg*m^2]
+I_inv  = diag([1/Ix, 1/Iy, 1/Iz]);
 omega = [0.02; 0.05; 0.08]; %[rad/s]
 A0 = eye(3);
 c = 3 * 10^8; % [m/s]

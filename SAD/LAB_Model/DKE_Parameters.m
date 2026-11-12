@@ -35,8 +35,8 @@ A0 = eye(3);                %[] Preallocation of DCM Matrix at t=0s
 % 3) Initial Calculations dependant on Input Parameters and Constant
 % Parameters
 a = R_e + h;              %[m] Semi-Major Axis
-Tf = 2*pi*sqrt(a^3/mu_e); %orbit period [s]
-n_e = sqrt(mu_e/a^3);     %[rad/s] Mean Motion of the Earth
+Tf = 2*pi*sqrt(a^3/mu_e); %[s] orbit period 
+n_e = sqrt(mu_e/a^3);     %[rad/s] Mean Motion of the Satellite Around Earth
 n_s = 2*pi/T_s;           %[rad/s] Mean Motion of the sun
 P = J_s/c;                %[Pa] Solar Radiation pressure @ 1AU
 omega_e = 2*pi/T_e;       %[rad/s] Earth's rotation speed

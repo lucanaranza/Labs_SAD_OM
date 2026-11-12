@@ -1,4 +1,4 @@
-clear; clc;
+clear; clc; close all;
 % Group 39 - SAD Main Script Matlab - Revised 12/11/2026 %
 
 %% Orbit parameters and environment
@@ -8,10 +8,10 @@ e = 0.01;               %[]    Eccentricity
 i = deg2rad(45);        %[rad] Inclination
 RAAN = deg2rad(0);      %[rad] Right Ascension of ascending node
 AOP = deg2rad(0);       %[rad] Argument of Periapsis
-theta0 = deg2rad(100);  %[rad] True anomaly at t=0s
+theta_0 = deg2rad(100); %[rad] True anomaly at t=0s
 
 % 1.1) Launcher Input parameters
-omega = [0.02; 0.05; 0.08];   %[rad/s] Initial Angular Rates
+omega_0 = [0.02; 0.05; 0.08];   %[rad/s] Initial Angular Rates
 
 % 2) Constant Parameters: 
 G = 6.67E-11;               %[m^3/(kg*s^2)] Gravitational Constant
@@ -109,35 +109,27 @@ grid on; xlabel('Time [s]'); ylabel('Torque Magnitude [Nm]');
 legend('M_{mag}', 'M_{GG}', 'M_{SRP}', 'Location', 'best');
 title('Perturbation torques magnitude');
 
-%% Plot 2: Earth 3D orbit
+%% Plot 2: Earth 3D orbit + Trajectory plot
 ecl_i = find(out.its_eclipse_time, 1, 'first');
 ecl_f = find(out.its_eclipse_time, 1, 'last');
-
 figure('Name', '3D Orbit', 'Color', 'w');
-R_earth = 6371e3; % [m]
 [X, Y, Z] = sphere(40);
-surf(X*R_earth, Y*R_earth, Z*R_earth, 'FaceColor', [0.2 0.5 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.6);
+surf(X*R_e, Y*R_e, Z*R_e, 'FaceColor', [0.2 0.5 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.6);
 hold on; plot3(r_N(:,1), r_N(:,2), r_N(:,3), 'k', 'LineWidth', 2);
 axis equal; grid on; view(45, 30);
 xlabel('X_N'); ylabel('Y_N'); zlabel('Z_N');
 plot3(r_N(ecl_i:ecl_f, 1), r_N(ecl_i:ecl_f, 2), r_N(ecl_i:ecl_f, 3), 'r', 'LineWidth', 2)
 title('Satellite Orbit 3D');
 
-%% Trajectory plot
 % plot3(r_N(:,1), r_N(:,2), r_N(:,3), 'k', 'LineWidth', 2);
 %Start point (t=0)
 plot3(r_N(1,1), r_N(1,2), r_N(1,3), 'go', 'MarkerFaceColor', 'g', 'MarkerSize', 10);
-
-%Velocity direction arrow
 dir_vector = r_N(2,:) - r_N(1,:); %velocity vector at t0
-dir_vector = (dir_vector / norm(dir_vector)) * R_earth * 0.5;
+dir_vector = (dir_vector / norm(dir_vector)) * R_e * 0.5;
 quiver3(r_N(1,1), r_N(1,2), r_N(1,3),dir_vector(1), dir_vector(2), dir_vector(3),'Color', 'r', 'LineWidth', 2.5, 'MaxHeadSize', 0.5);
-
-%Sun vector at t=0
-S_N_out = out.S_N_out;
+S_N_out = out.S_N_out; %Sun vector at t=0
 S_vec = S_N_out(1, :); 
-
 S_vec = S_vec / norm(S_vec);
-L = R_earth * 2;
+L = R_e * 2;
 quiver3(0, 0, 0, S_vec(1)*L, S_vec(2)*L, S_vec(3)*L,'Color', 'y', 'LineWidth', 2);
 text(S_vec(1)*L*1.1, S_vec(2)*L*1.1, S_vec(3)*L*1.1, 'SUN', 'Color', 'y');

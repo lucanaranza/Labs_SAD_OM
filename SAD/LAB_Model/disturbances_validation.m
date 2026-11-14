@@ -111,7 +111,7 @@ flag_SRP = 0;
 
 out = sim('disturbances_test', 'Solver', 'ode5', 'FixedStep', '0.1', 'StopTime', 'Tf');
 t      = out.t;
-M_mag  = out.M_mag;
+M_mag  = out.M_mag_L;
 
 figure('Name', 'Magnetic torque check')
 plot(t,M_mag)

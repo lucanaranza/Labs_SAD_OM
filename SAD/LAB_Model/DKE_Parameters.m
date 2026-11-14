@@ -57,7 +57,7 @@ I_depl = [Ixx, Ixy, Ixz;
 
 %Inverse of Inertia Matrix - Precomputed 
 I_inv  = inv(I_depl);
-r_CM = [0.015; 0.2; 0];  % [m]
+r_CM = [0.015; 0.02; 0];  % [m]
 
 % 2) Geometrical properties
 L1  = [0; 0; +1];

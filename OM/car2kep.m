@@ -53,7 +53,7 @@ function [a, e, i, OM, om, th] = car2kep(rr, vv, mu)
         if dot(cross(NN, rr), hh) >= 0
             th = real(acos(dot(rr, NN) / r));
         else
-            th = 2*pi - real(acos(dot(rr, NN)) / r);
+            th = 2*pi - real(acos(dot(rr, NN) / r));
         end
     else            % elliptical orbit
         if dot(cross(NN, ee), hh) >= 0

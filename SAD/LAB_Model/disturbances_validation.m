@@ -9,8 +9,6 @@ clear; clc; close all;
 % i = 0
 % All the components of the gravity gradient and of the gravity gradient should be null
 
-flag = 1;                    %[bool] Activates magnetic torque and gravity gradient, disactivates SRP
-
 % 1) Input Parameters: Keplerian elements 
 a = 8000E3;                 %[m] Semimajor Axis
 e = 0;                       %[] Eccentricity
@@ -88,6 +86,7 @@ j_B = [0 0 0];
 theta0 = deg2rad(0);
 flag_GG = 1;
 flag_SRP = 0;
+% A0 = eye(3);
 
 out = sim('disturbances_test', 'Solver', 'ode5', 'FixedStep', '0.1', 'StopTime', 'Tf');
 t     = out.t;
@@ -125,10 +124,8 @@ ylabel('torque')
 omega = [0; 0; 0];
 j_B = [0 0 0];
 theta0 = deg2rad(0);
-tilt_mag = deg2rad(0);
 flag_GG = 0;
 flag_SRP = 1;
-r_CM = [0.05; 0; 0]; % [m]
 
 out = sim('disturbances_test', 'Solver', 'ode5', 'FixedStep', '0.1', 'StopTime', 'Tf');
 t = out.t;

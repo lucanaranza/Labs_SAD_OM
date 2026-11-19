@@ -138,8 +138,8 @@ FoV_half_deg = 12.7;
 cos_FoV = cosd(FoV_half_deg);
 
 % Boresight Alnilam (for plotting only, since Simulink uses the full 60)
-boresight_vector = [0.10450511; 0.99430382; -0.02094247]; 
-boresight_vector = boresight_vector / norm(boresight_vector); 
+boresight_vector = [0.47799905; 0.12671554; 0.86917207];
+boresight_vector = boresight_vector / norm(boresight_vector);
 
 % Filter stars (for plotting only)
 cos_angles = boresight_vector' * S_all;
@@ -149,13 +149,25 @@ S_visible  = S_all(:, valid_idx); % 5 stars
 
 % Optics & Noise (Sagitta 10" specification)
 f = 0.05;
-sigma_rad = (3 / 3600) * (pi / 180);
+sigma_rad = (2 / 3600) * (pi / 180); %Error based on the cross boresight error of 2" (2 arcseconds)
 var_uv = (f * tan(sigma_rad))^2;
 
 % Noise seeds
 rng(42);
 seed_u = randi(1000000, 1, N_stars);
 seed_v = randi(1000000, 1, N_stars) + 1;
+
+%% A_target matrix (currently the constellation Cassiopeia)
+
+% Target DCM aligning +Y_body (StarTracker position) with Cassiopeia boresight
+b = [0.47799905; 0.12671554; 0.86917207];
+b = b / norm(b);
+
+ref = [0; 0; 1]; % Auxiliary inertial vector (not parallel to b)
+u1 = cross(ref, b); u1 = u1 / norm(u1);
+u2 = cross(b, u1);  u2 = u2 / norm(u2);
+
+A_target = [u2'; b'; u1']; % A_target * b = [0; 1; 0], det = +1
 
 %% Task 5: Run simulation and plots
 % Run Simulation
